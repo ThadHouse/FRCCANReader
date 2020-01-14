@@ -1,0 +1,83 @@
+
+plugins {
+  id 'c'
+  id 'cpp'
+  id 'edu.wpi.first.wpilib.repositories.WPILibRepositoriesPlugin' version '2020.2'
+    id 'edu.wpi.first.NativeUtils' version '2020.7.2'
+  id 'edu.wpi.first.GradleVsCode' version '0.12.0'
+}
+
+repositories {
+  mavenCentral()
+}
+wpilibRepositories.addAllReleaseRepositories(project)
+
+// Apply C++ configuration
+apply from: 'config.gradle'
+
+// Set up exports properly
+nativeUtils {
+  privateExportsConfigs {
+    // Only export explicit symbols from driver library
+    FRC_CAN_Reader_Native {
+      exportsFile = project.file("src/main/driver/symbols.txt")
+      performStripAllSymbols = true
+    }
+  }
+}
+
+model {
+  components {
+    FRC_CAN_Reader_Native(NativeLibrarySpec) {
+      sources {
+        cpp {
+          source {
+            srcDirs 'src/main/driver/cpp'
+            include '**/*.cpp'
+          }
+          exportedHeaders {
+            srcDirs 'src/main/driver/include'
+            srcDirs 'src/main/driver/privateinclude'
+          }
+        }
+      }
+
+      binaries.all {
+        if (it.targetPlatform.operatingSystem.windows) {
+          it.sources {
+            candleWindows(CSourceSet) {
+              source {
+                srcDirs 'src/main/driver/c'
+                include '**/*.c'
+              }
+              exportedHeaders {
+                srcDirs 'src/main/driver/include'
+                srcDirs 'src/main/driver/privateinclude'
+              }
+            }
+          }
+        }
+      }
+      
+      nativeUtils.useRequiredLibrary(it, "wpiutil_static")
+    }
+    TestExe(NativeExecutableSpec) {
+      sources {
+        cpp {
+          source {
+            srcDirs 'src/main/exe/cpp'
+          }
+        }
+      }
+
+      binaries.all {
+        lib library: 'FRC_CAN_Reader_Native', linkage: 'shared'
+        nativeUtils.useRequiredLibrary(it, "wpiutil_static")
+      }
+    }
+  }
+}
+
+wrapper {
+  gradleVersion '6.0'
+}

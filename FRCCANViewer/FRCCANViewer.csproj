@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Update="**\*.xaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+    <AvaloniaResource Include="**\*.xaml">
+      <SubType>Designer</SubType>
+    </AvaloniaResource>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Autofac" Version="4.9.4" />
+    <PackageReference Include="Avalonia" Version="0.9.1" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="0.9.1" />
+    <PackageReference Include="Avalonia.Desktop" Version="0.9.1" />
+    <PackageReference Include="System.Memory" Version="4.5.3" />
+  </ItemGroup>
+</Project>
