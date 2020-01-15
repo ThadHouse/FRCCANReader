@@ -3,6 +3,8 @@ using FRCCANViewer.Models;
 using FRCCANViewer.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -45,6 +47,7 @@ extern "C" {
 
     public unsafe class NativeCAN : ICANReader, ICANInterfaceManager
     {
+        const string NativeCANLibrary = "FRC_CAN_Reader_Native";
         public event NewCANMessage CANMessageReceived;
 
         private readonly Thread readThread;
@@ -63,9 +66,41 @@ extern "C" {
             public byte* name;
         };
 
+        static NativeCAN()
+        {
+            NativeLibrary.SetDllImportResolver(typeof(NativeCAN).Assembly, ImportResolver);
+        }
+
+        private static IntPtr ImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
+        {
+            IntPtr libHandle = IntPtr.Zero;
+            if (libraryName == NativeCANLibrary)
+            {
+                // Get current EXE dir
+                var loc = assembly.Location;
+                var dirName = Path.GetDirectoryName(loc);
+                var libName = Path.Join(dirName, "Natives", "FRC_CAN_Reader_Native");
+
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    if (sizeof(IntPtr) == 8)
+                    {
+                        libName += ".dll.windowsx86-64";
+                    } 
+                    else
+                    {
+                        libName += ".dll.windowsx86";
+                    }
+                }
+                // Try using the system library 'libmylibrary.so.5'
+                NativeLibrary.TryLoad(libName, assembly, DllImportSearchPath.System32, out libHandle);
+            }
+            return libHandle;
+        }
 
         public NativeCAN()
         {
+
             FRC_CAN_Reader_Native_Start();
 
             readThread = new Thread(() =>
@@ -114,19 +149,19 @@ extern "C" {
             return ret;
         }
 
-        [DllImport("FRC_CAN_Reader_Native", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(NativeCANLibrary, CallingConvention = CallingConvention.Cdecl)]
         private static extern void FRC_CAN_Reader_Native_Start();
 
-        [DllImport("FRC_CAN_Reader_Native", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(NativeCANLibrary, CallingConvention = CallingConvention.Cdecl)]
         private static extern unsafe int FRC_CAN_Reader_Native_ReadMessage(CANData* data);
 
-        [DllImport("FRC_CAN_Reader_Native", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(NativeCANLibrary, CallingConvention = CallingConvention.Cdecl)]
         private static extern unsafe CAN_Device* FRC_CAN_Reader_Native_EnumerateDevices(int* length);
 
-        [DllImport("FRC_CAN_Reader_Native", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(NativeCANLibrary, CallingConvention = CallingConvention.Cdecl)]
         private static extern unsafe void FRC_CAN_Reader_Native_FreeDevices(CAN_Device* devices, int length);
 
-        [DllImport("FRC_CAN_Reader_Native", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(NativeCANLibrary, CallingConvention = CallingConvention.Cdecl)]
         private static extern unsafe void FRC_CAN_Reader_Native_SetDevice(byte* deviceId);
     }
 }

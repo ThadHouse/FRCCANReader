@@ -2,7 +2,16 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <PublishTrimmed>true</PublishTrimmed>
+    <PublishReadyToRun>true</PublishReadyToRun>
+    <PublishSingleFile>true</PublishSingleFile>
+    <PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
+    <RuntimeIdentifier Condition=" '$(PublishPlatform)' == 'x64' ">win-x64</RuntimeIdentifier>
+    <RuntimeIdentifier Condition=" '$(PublishPlatform)' == 'x86' ">win-x86</RuntimeIdentifier>
+    <RuntimeIdentifier Condition=" '$(PublishPlatform)' == 'linux' ">linux-x64</RuntimeIdentifier>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <!-- <Platforms>Any CPU;x64;x86;linux</Platforms>
+    <Configurations>Debug;Release</Configurations> -->
   </PropertyGroup>
   <ItemGroup>
     <Compile Update="**\*.xaml.cs">
@@ -38,7 +47,16 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Update="FRC_CAN_Reader_Native.dll">
+    <None Condition=" '$(PublishPlatform)' == 'x86' " Update="Natives\FRC_CAN_Reader_Native.dll.windowsx86">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Condition=" '$(PublishPlatform)' == 'x64' " Update="Natives\FRC_CAN_Reader_Native.dll.windowsx86-64">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Condition=" '$(PublishPlatform)' == '' " Update="Natives\FRC_CAN_Reader_Native.dll.windowsx86-64">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Condition=" '$(PublishPlatform)' == 'linux' " Update="Natives\FRC_CAN_Reader_Native.so.linuxx86-64">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

@@ -7,6 +7,8 @@ plugins {
   id 'edu.wpi.first.GradleVsCode' version '0.12.0'
 }
 
+ext.buildwin32 = true
+
 repositories {
   mavenCentral()
 }
@@ -58,7 +60,7 @@ model {
           }
         }
       }
-      
+
       nativeUtils.useRequiredLibrary(it, "wpiutil_static")
     }
     TestExe(NativeExecutableSpec) {
@@ -73,6 +75,38 @@ model {
       binaries.all {
         lib library: 'FRC_CAN_Reader_Native', linkage: 'shared'
         nativeUtils.useRequiredLibrary(it, "wpiutil_static")
+      }
+    }
+  }
+
+  tasks {
+    def c = $.components
+    copyBinaries(Task) { Task t ->
+      def files = [:]
+      c.each {
+        if (it.name != 'FRC_CAN_Reader_Native') return
+        it.binaries.withType(SharedLibraryBinarySpec).each {
+          if(it.buildType.name != 'release') return
+          t.dependsOn it.tasks.link
+          t.inputs.file it.sharedLibraryFile
+          files.put(it.targetPlatform.name, it.sharedLibraryFile)
+        }
+      }
+      t.outputs.dir "$buildDir/../../FRCCANViewer/Natives"
+      doLast {
+        files.each { f ->
+          copy {
+            from f.value
+            into "$buildDir/../../FRCCANViewer/Natives"
+            rename {
+
+              return "${f.value.name}.${f.key}"
+            }
+          }
+          println f.value.name
+          println f.key
+          println f.value
+        }
       }
     }
   }

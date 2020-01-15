@@ -1,4 +1,5 @@
-﻿using Avalonia.Threading;
+﻿using Avalonia;
+using Avalonia.Threading;
 using FRCCANViewer.Interfaces;
 using FRCCANViewer.Models;
 using FRCCANViewer.Views;
