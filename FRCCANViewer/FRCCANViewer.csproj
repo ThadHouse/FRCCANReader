@@ -1,11 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+  <PropertyGroup Condition=" '$(PublishPlatform)' != '' ">
     <PublishTrimmed>true</PublishTrimmed>
     <PublishReadyToRun>true</PublishReadyToRun>
     <PublishSingleFile>true</PublishSingleFile>
     <PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+
     <RuntimeIdentifier Condition=" '$(PublishPlatform)' == 'x64' ">win-x64</RuntimeIdentifier>
     <RuntimeIdentifier Condition=" '$(PublishPlatform)' == 'x86' ">win-x86</RuntimeIdentifier>
     <RuntimeIdentifier Condition=" '$(PublishPlatform)' == 'linux' ">linux-x64</RuntimeIdentifier>
