@@ -1,1 +1,6 @@
 FRC_CAN_Reader_Native_EnumerateDevices
+FRC_CAN_Reader_Native_FreeDevices
+FRC_CAN_Reader_Native_Start
+FRC_CAN_Reader_Native_SetDevice
+FRC_CAN_Reader_Native_ReadMessage
+FRC_CAN_Reader_Native_ReleaseMessage

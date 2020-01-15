@@ -12,5 +12,15 @@ namespace FRCCANViewer.DesignerMocks
         {
             return Task.CompletedTask;
         }
+
+        public Task InvokeOnMainThread(Action toInvoke)
+        {
+            return Task.CompletedTask;
+        }
+
+        public void PostOnMainThread(Action toInvoke)
+        {
+            
+        }
     }
 }

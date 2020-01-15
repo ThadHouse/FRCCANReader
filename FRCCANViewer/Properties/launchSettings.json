@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "FRCCANViewer": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

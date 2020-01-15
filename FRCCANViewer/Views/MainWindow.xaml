@@ -12,6 +12,11 @@
         <Separator/>
         <MenuItem Header="_Exit"/>
       </MenuItem>
+      <MenuItem Header="Utilities">
+        <MenuItem Header="Configure CAN Interface" Command="{Binding ConfigureCAN}"></MenuItem>
+        <Separator/>
+        <MenuItem Header="Open Arbitration ID Calculator" Command="{Binding ArbIdCalcWindow}"></MenuItem>
+      </MenuItem>
     </Menu>
     <DataGrid Items="{Binding CANMessages}" x:Name="DataGrid" AutoGenerateColumns="True" CanUserResizeColumns="True">
     </DataGrid>

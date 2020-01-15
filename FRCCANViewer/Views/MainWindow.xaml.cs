@@ -4,13 +4,16 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.Markup.Xaml;
+using FRCCANViewer.CAN;
 using FRCCANViewer.Converters;
 using FRCCANViewer.DesignerMocks;
 using FRCCANViewer.Interfaces;
+using FRCCANViewer.Utilities;
 using FRCCANViewer.ViewModels;
 
 namespace FRCCANViewer.Views
 {
+
     public class MainWindow : Window, IDependencyInjection
     {
         public MainWindow()
@@ -27,8 +30,8 @@ namespace FRCCANViewer.Views
             }
             else
             {
-                builder.RegisterType<DesignerCANReader>().SingleInstance().AsImplementedInterfaces();
-                builder.RegisterType<DesignerMainThreadInvoker>().SingleInstance().AsImplementedInterfaces();
+                builder.RegisterType<NativeCAN>().SingleInstance().AsImplementedInterfaces();
+                builder.RegisterType<AvaloniaMainThreadInvoker>().SingleInstance().AsImplementedInterfaces();
             }
 
             Container = builder.Build();

@@ -1,0 +1,38 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="FRCCANViewer.Views.ArbitrationCalculator"
+        Title="Arbitration ID Calculator">
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="*"></ColumnDefinition>
+      <ColumnDefinition Width="*"></ColumnDefinition>
+    </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="1*"></RowDefinition>
+      <RowDefinition Height="9*"></RowDefinition>
+    </Grid.RowDefinitions>
+    <!--<CheckBox Margin="10,0,0,0" IsChecked="{Binding Hexidecimal}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">Hexidecimal</CheckBox>-->
+    <TextBlock Margin="10,10,0,0" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">All Values are in Hex</TextBlock>
+  <StackPanel Grid.Column="0" Grid.Row="1" Margin="10,10,10,10">
+    <TextBlock>Device ID</TextBlock>
+    <TextBox Text="{Binding DeviceId, Mode=TwoWay}"></TextBox>
+    <TextBlock>API ID</TextBlock>
+    <TextBox Text="{Binding ApiId, Mode=TwoWay}"></TextBox>
+    <TextBlock>Manufacturer</TextBlock>
+    <TextBox Text="{Binding Manufacturer, Mode=TwoWay}"></TextBox>
+    <TextBlock>Device Type</TextBlock>
+    <TextBox Text="{Binding DeviceType, Mode=TwoWay}"></TextBox>
+  </StackPanel>
+    <StackPanel Grid.Column="1" Grid.Row="1" Margin="10,10,10,10">
+      <TextBlock>Full Arbitration ID</TextBlock>
+      <TextBox Text="{Binding FullArbId, Mode=TwoWay}"></TextBox>
+      <TextBlock Margin="0,40,0,0">Manufacturer</TextBlock>
+      <TextBlock Margin="0,5,0,0" Text="{Binding ManufacturerEnum}"></TextBlock>
+      <TextBlock Margin="0,10,0,0">Device Type</TextBlock>
+      <TextBlock Margin="0,5,0,0" Text="{Binding DeviceTypeEnum}"></TextBlock>
+    </StackPanel>
+  </Grid>
+</Window>

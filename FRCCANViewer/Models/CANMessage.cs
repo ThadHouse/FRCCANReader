@@ -58,7 +58,7 @@ namespace FRCCANViewer.Models
         public uint DataLength { get; private set; }
         public uint TimeStamp { get; private set; }
 
-        public CANMessage(uint rawId, Span<byte> data, uint ts)
+        public CANMessage(uint rawId, ReadOnlySpan<byte> data, uint ts)
         {
             this.rawId = rawId;
             DataLength = (uint)data.Length;
@@ -66,7 +66,7 @@ namespace FRCCANViewer.Models
             TimeStamp = ts;
         }
 
-        public void UpdateData(Span<byte> data, uint ts)
+        public void UpdateData(ReadOnlySpan<byte> data, uint ts)
         {
             DataLength = (uint)data.Length;
             data.CopyTo(this.data);

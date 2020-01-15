@@ -8,5 +8,7 @@ namespace FRCCANViewer.Interfaces
     public interface IMainThreadInvoker
     {
         Task InvokeOnMainThread<T>(Action<T> toInvoke, T data);
+        Task InvokeOnMainThread(Action toInvoke);
+        void PostOnMainThread(Action toInvoke);
     }
 }

@@ -2,16 +2,26 @@
 
 #include <stdint.h>
 
-typedef void* HALSIM_Candle_Handle;
-
-struct HALSIM_Candle_Device {
+struct CAN_Device {
     char* deviceId;
+    char* name;
 };
 
-extern "C" {
-HALSIM_Candle_Handle HALSIM_Candle_Enable(const char* name, int32_t baud);
-void HALSIM_Candle_Clean(HALSIM_Candle_Handle handle);
+struct CANData {
+  uint64_t timestamp;
+  int32_t id;
+  uint8_t length;
+  uint8_t data[8];
+};
 
-struct HALSIM_Candle_Device* HALSIM_Candle_GetDevices(int32_t* count);
-void HALSIM_Candle_FreeDevices(struct HALSIM_Candle_Device* devices, int32_t count);
+
+extern "C" {
+    struct CAN_Device* FRC_CAN_Reader_Native_EnumerateDevices(int* length);
+    void FRC_CAN_Reader_Native_FreeDevices(struct CAN_Device* devices, int length);
+
+    void FRC_CAN_Reader_Native_Start();
+    void FRC_CAN_Reader_Native_SetDevice(const char* deviceId);
+
+    int FRC_CAN_Reader_Native_ReadMessage(struct CANData* data);
+    void FRC_CAN_Reader_Native_ReleaseMessage();
 }

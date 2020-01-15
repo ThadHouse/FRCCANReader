@@ -5,16 +5,12 @@
 #include <vector>
 #include <string>
 #include "wpi/Twine.h"
-
-struct CANData {
-  uint64_t timestamp;
-  int32_t id;
-  uint8_t length;
-  uint8_t data[8];
-};
+#include "FRC_CAN_Reader_Native.h"
 
 class CANController {
 public:
+    virtual ~CANController() = default;
     virtual std::optional<CANData> getData() = 0;
-    virtual void stop() = 0;
+    virtual void releaseData() = 0;
+    virtual void selectDevice(std::string port) = 0;
 };
