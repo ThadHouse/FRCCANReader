@@ -3,21 +3,23 @@
   Copyright (c) 2016 Hubert Denkmair <hubert@denkmair.de>
 
   This file is part of the candle windows API.
-  
+
   This library is free software: you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
   License as published by the Free Software Foundation, either
   version 3 of the License, or (at your option) any later version.
- 
+
   This library is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
   Lesser General Public License for more details.
- 
+
   You should have received a copy of the GNU Lesser General Public
   License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
 */
+
+#ifdef _WIN32
 
 #include "candle.h"
 #include <stdlib.h>
@@ -328,7 +330,7 @@ static bool candle_dev_interal_open(candle_handle hdev)
     if (!WinUsb_SetPipePolicy(dev->winUSBHandle, dev->bulkInPipe, RAW_IO, sizeof(use_raw_io), &use_raw_io)) {
         dev->last_error = CANDLE_ERR_SET_PIPE_RAW_IO;
         goto winusb_free;
-    } 
+    }
 
     if (!candle_ctrl_set_host_format(dev)) {
         goto winusb_free;
@@ -652,3 +654,9 @@ uint32_t __cdecl DLL candle_frame_timestamp_us(candle_frame_t *frame)
 {
     return frame->timestamp_us;
 }
+
+#else
+
+void CandleFunc() {}
+
+#endif

@@ -1,5 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Diagnostics;
 using Avalonia.Markup.Xaml;
 using FRCCANViewer.Interfaces;
 using FRCCANViewer.ViewModels;
@@ -21,7 +22,7 @@ namespace FRCCANViewer.Views
 
         public DeviceSelector()
         {
-            
+
             this.InitializeComponent();
 #if DEBUG
             this.AttachDevTools();

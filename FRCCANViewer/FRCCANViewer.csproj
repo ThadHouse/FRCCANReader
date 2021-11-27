@@ -7,7 +7,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
 
     <RuntimeIdentifier Condition=" '$(PublishPlatform)' == 'x64' ">win-x64</RuntimeIdentifier>
     <RuntimeIdentifier Condition=" '$(PublishPlatform)' == 'x86' ">win-x86</RuntimeIdentifier>
@@ -33,11 +33,12 @@
     <None Remove="Views\DeviceSelector.xaml" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Autofac" Version="4.9.4" />
-    <PackageReference Include="Avalonia" Version="0.9.1" />
-    <PackageReference Include="Avalonia.Controls.DataGrid" Version="0.9.1" />
-    <PackageReference Include="Avalonia.Desktop" Version="0.9.1" />
-    <PackageReference Include="System.Memory" Version="4.5.3" />
+    <PackageReference Include="Autofac" Version="6.3.0" />
+    <PackageReference Include="Avalonia" Version="0.10.10" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="0.10.10" />
+    <PackageReference Include="Avalonia.Desktop" Version="0.10.10" />
+    <PackageReference Include="Avalonia.Diagnostics" Version="0.10.10" />
+    <PackageReference Include="System.Memory" Version="4.5.4" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Views\ArbitrationCalculator.xaml">
