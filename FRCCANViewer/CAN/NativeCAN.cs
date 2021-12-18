@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -13,7 +14,7 @@ namespace FRCCANViewer.CAN
 {
 
     /*
-     * 
+     *
      * #pragma once
 
 #include <stdint.h>
@@ -57,7 +58,7 @@ extern "C" {
             public ulong timestamp;
             public int id;
             public byte length;
-            public ulong data;
+            public fixed byte data[8];
         };
 
         private struct CAN_Device
@@ -86,7 +87,7 @@ extern "C" {
                     if (sizeof(IntPtr) == 8)
                     {
                         libName += ".dll.windowsx86-64";
-                    } 
+                    }
                     else
                     {
                         libName += ".dll.windowsx86";
@@ -112,7 +113,8 @@ extern "C" {
                     {
                         continue;
                     }
-                    CANMessageReceived?.Invoke((uint)data.id, data.data, data.length, (uint)data.timestamp);
+                    ulong ulongData = Unsafe.ReadUnaligned<ulong>(data.data);
+                    CANMessageReceived?.Invoke((uint)data.id, ulongData, data.length, (uint)data.timestamp);
                 }
             });
             readThread.IsBackground = true;

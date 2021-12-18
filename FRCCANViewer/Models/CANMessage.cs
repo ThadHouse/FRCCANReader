@@ -58,6 +58,44 @@ namespace FRCCANViewer.Models
         public uint DataLength { get; private set; }
         public uint TimeStamp { get; private set; }
 
+        public uint Delta { get; private set; }
+
+        unsafe struct CircularBuffer
+        {
+            const int count = 16;
+            private fixed uint values[count];
+            private int index = 0;
+
+            public uint Average
+            {
+                get
+                {
+                    ulong sum = 0;
+                    for (int i = 0; i < count; i++)
+                    {
+                        sum += values[i];
+                    }
+                    return (uint)(sum / count);
+                }
+            }
+
+            public void Insert(uint value)
+            {
+                values[index] = value;
+                index++;
+                if (index >= count)
+                {
+                    index = 0;
+                }
+            }
+        }
+
+        CircularBuffer DeltaBuffer;
+
+        uint lastPrintTime = 0;
+
+        public uint SmoothDelta => DeltaBuffer.Average;
+
         public CANMessage(uint rawId, ReadOnlySpan<byte> data, uint ts)
         {
             this.rawId = rawId;
@@ -70,10 +108,18 @@ namespace FRCCANViewer.Models
         {
             DataLength = (uint)data.Length;
             data.CopyTo(this.data);
+            Delta = ts - TimeStamp;
+            DeltaBuffer.Insert(Delta);
             TimeStamp = ts;
             RaisePropertyChanged(nameof(TimeStamp));
             RaisePropertyChanged(nameof(Data));
             RaisePropertyChanged(nameof(DataLength));
+            RaisePropertyChanged(nameof(Delta));
+            uint elapsed = ts - lastPrintTime;
+            if (elapsed >= TimeSpan.FromMilliseconds(500).TotalMilliseconds * 1000) {
+                RaisePropertyChanged(nameof(SmoothDelta));
+                lastPrintTime = ts;
+            }
         }
 
         protected bool RaiseAndSetIfChanged<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
