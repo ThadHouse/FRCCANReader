@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <wpi/Synchronization.h>
 
 struct CAN_Device {
     char* deviceId;
@@ -14,14 +15,17 @@ struct CANData {
   uint8_t data[8];
 };
 
+typedef void* CANDeviceHandle;
 
 extern "C" {
-    struct CAN_Device* FRC_CAN_Reader_Native_EnumerateDevices(int* length);
-    void FRC_CAN_Reader_Native_FreeDevices(struct CAN_Device* devices, int length);
 
-    void FRC_CAN_Reader_Native_Start();
-    void FRC_CAN_Reader_Native_SetDevice(const char* deviceId);
+  struct CAN_Device* FRC_CAN_Reader_Native_EnumerateDevices(int* length);
+  void FRC_CAN_Reader_Native_FreeDevices(struct CAN_Device* devices, int length);
 
-    int FRC_CAN_Reader_Native_ReadMessage(struct CANData* data);
-    void FRC_CAN_Reader_Native_ReleaseMessage();
+  CANDeviceHandle FRC_CAN_Reader_Native_Create(const struct CAN_Device* device);
+  void FRC_CAN_Reader_Native_Free(CANDeviceHandle handle);
+
+  WPI_EventHandle FRC_CAN_Reader_Native_GetEventHandle(CANDeviceHandle handle);
+
+  void FRC_CAN_Reader_Native_ReadMessage(CANDeviceHandle handle, struct CANData* data);
 }

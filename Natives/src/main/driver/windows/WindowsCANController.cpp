@@ -1,4 +1,3 @@
-#ifdef _WIN32
 #include "WindowsCANController.h"
 
 #include "candle.h"
@@ -242,4 +241,3 @@ void WindowsCANController::readThreadMain()
         m_incomingData.emplace(newData);
     }
 }
-#endif

@@ -1,48 +1,66 @@
 #include "FRC_CAN_Reader_Native.h"
-#include "Windows/WindowsCANController.h"
+#include "CANControllerDetector.h"
 
-static WindowsCANController* canController;
-
-extern "C" {
-    struct CAN_Device* FRC_CAN_Reader_Native_EnumerateDevices(int* length) {
-        auto cppDevices = WindowsCANController::getDevices();
-        CAN_Device* devices = (CAN_Device*)malloc(sizeof(CAN_Device) * cppDevices.size());
-        *length = cppDevices.size();
-        for (size_t i = 0; i < cppDevices.size(); i++) {
-            devices[i].name = (char*)malloc(cppDevices[i].first.size() * sizeof(char) + 1);
-            strcpy(devices[i].name, cppDevices[i].first.c_str());
-            devices[i].deviceId = (char*)malloc(cppDevices[i].second.size() * sizeof(char) + 1);
-            strcpy(devices[i].deviceId, cppDevices[i].second.c_str());
+extern "C"
+{
+    struct CAN_Device *FRC_CAN_Reader_Native_EnumerateDevices(int *length)
+    {
+        auto cppDevices = can::CANControllerDetector::EnumerateDevices();
+        size_t allocLength = sizeof(CAN_Device) * cppDevices.size();
+        for (auto &&device : cppDevices)
+        {
+            length += device.name.size() + device.deviceId.size() + 2;
         }
-        return devices;
+
+        CAN_Device *devices = reinterpret_cast<CAN_Device *>(malloc(allocLength));
+        if (devices == nullptr)
+        {
+            *length = 0;
+            return nullptr;
+        }
+        *length = cppDevices.size();
+        char *stringBase = reinterpret_cast<char *>(devices + cppDevices.size());
+        CAN_Device *baseDevices = devices;
+        for (auto &&device : cppDevices)
+        {
+            devices->name = stringBase;
+            strcpy(stringBase, device.name.c_str());
+            stringBase += device.name.size() + 1;
+            devices->deviceId = stringBase;
+            strcpy(stringBase, device.deviceId.c_str());
+            stringBase += device.deviceId.size() + 1;
+            devices++;
+        }
+        return baseDevices;
     }
 
-    void FRC_CAN_Reader_Native_FreeDevices(struct CAN_Device* devices, int length) {
-        for (int i = 0; i < length; i++) {
-            free(devices[i].name);
-            free(devices[i].deviceId);
-        }
+    void FRC_CAN_Reader_Native_FreeDevices(struct CAN_Device *devices, int length)
+    {
         free(devices);
     }
 
-    void FRC_CAN_Reader_Native_Start() {
-        canController = new WindowsCANController();
+    CANDeviceHandle FRC_CAN_Reader_Native_Create(const struct CAN_Device *device)
+    {
+        can::CANDevice cppDevice;
+        cppDevice.name = device->name;
+        cppDevice.deviceId = device->deviceId;
+        auto controller = can::CANControllerDetector::CreateController(cppDevice);
+        return controller.release();
     }
 
-    void FRC_CAN_Reader_Native_SetDevice(const char* deviceId) {
-        canController->selectDevice(deviceId);
+    void FRC_CAN_Reader_Native_Free(CANDeviceHandle handle)
+    {
+        delete reinterpret_cast<CANController *>(handle);
     }
 
-    int FRC_CAN_Reader_Native_ReadMessage(struct CANData* data) {
-        auto msg = canController->getData();
-        if (!msg) {
-            return false;
-        }
-        *data = *msg;
-        return true;
+    WPI_EventHandle FRC_CAN_Reader_Native_GetEventHandle(CANDeviceHandle handle)
+    {
+        return reinterpret_cast<CANController *>(handle)->getEventHandle().GetHandle();
     }
 
-    void FRC_CAN_Reader_Native_ReleaseMessage() {
-        canController->releaseData();
+    void FRC_CAN_Reader_Native_ReadMessage(CANDeviceHandle handle, struct CANData *data)
+    {
+        auto msg = reinterpret_cast<CANController *>(handle)->getData();
+        *data = msg;
     }
 }

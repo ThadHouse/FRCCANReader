@@ -3,7 +3,7 @@ plugins {
   id 'c'
   id 'cpp'
   id 'edu.wpi.first.wpilib.repositories.WPILibRepositoriesPlugin' version '2020.2'
-  id 'edu.wpi.first.NativeUtils' version '2022.5.1'
+  id 'edu.wpi.first.NativeUtils' version '2022.7.1'
   id 'edu.wpi.first.GradleVsCode' version '1.1.0'
 }
 
@@ -12,7 +12,7 @@ ext.buildwin32 = true
 repositories {
   mavenCentral()
 }
-wpilibRepositories.addAllReleaseRepositories(project)
+wpilibRepositories.addAllDevelopmentRepositories(project)
 
 // Apply C++ configuration
 apply from: 'config.gradle'
@@ -59,7 +59,43 @@ model {
       }
 
       binaries.all {
-        lib library: 'Candle', linkage: 'static'
+        if (it.targetPlatform.operatingSystem.isWindows()) {
+          it.sources {
+            windowsCpp(CppSourceSet) {
+              source {
+                srcDirs 'src/main/driver/windows'
+                include '*.cpp'
+              }
+              exportedHeaders {
+                srcDirs 'src/main/driver/include'
+                srcDirs 'src/main/driver/privateinclude'
+              }
+            }
+            candleC(CSourceSet) {
+              source {
+                srcDirs 'src/main/driver/candle'
+                include '*.c'
+              }
+              exportedHeaders {
+                srcDirs 'src/main/driver/include'
+                srcDirs 'src/main/driver/privateinclude'
+              }
+            }
+          }
+        } else {
+          it.sources {
+            unixCpp(CppSourceSet) {
+              source {
+                srcDirs 'src/main/driver/unix'
+                include '*.cpp'
+              }
+              exportedHeaders {
+                srcDirs 'src/main/driver/include'
+                srcDirs 'src/main/driver/privateinclude'
+              }
+            }
+          }
+        }
         nativeUtils.useRequiredLibrary(it, "wpiutil_static")
       }
     }
@@ -114,5 +150,5 @@ model {
 }
 
 wrapper {
-  gradleVersion '7.2'
+  gradleVersion '7.3.2'
 }

@@ -162,3 +162,5 @@ bin/
 
 build/
 obj/
+.vscode/launch.json
+.vscode/tasks.json
