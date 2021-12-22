@@ -1,9 +1,10 @@
 #include "FRC_CAN_Reader_Native.h"
 #include "CANControllerDetector.h"
+#include "wpi/MemAlloc.h"
 
 extern "C"
 {
-    struct CAN_Device *FRC_CAN_Reader_Native_EnumerateDevices(int *length)
+    struct CAN_Device *FRC_CAN_Reader_Native_EnumerateDevices(int32_t *length)
     {
         auto cppDevices = can::CANControllerDetector::EnumerateDevices();
         size_t allocLength = sizeof(CAN_Device) * cppDevices.size();
@@ -34,18 +35,20 @@ extern "C"
         return baseDevices;
     }
 
-    void FRC_CAN_Reader_Native_FreeDevices(struct CAN_Device *devices, int length)
+    void FRC_CAN_Reader_Native_FreeDevices(struct CAN_Device *devices, int32_t length)
     {
         free(devices);
     }
 
-    CANDeviceHandle FRC_CAN_Reader_Native_Create(const struct CAN_Device *device)
+    CANDeviceHandle FRC_CAN_Reader_Native_Create()
     {
-        can::CANDevice cppDevice;
-        cppDevice.name = device->name;
-        cppDevice.deviceId = device->deviceId;
-        auto controller = can::CANControllerDetector::CreateController(cppDevice);
+        auto controller = can::CANControllerDetector::CreateController();
         return controller.release();
+    }
+
+    void FRC_CAN_Reader_Native_SetDevice(CANDeviceHandle handle, const char *deviceId)
+    {
+        reinterpret_cast<CANController *>(handle)->SelectDevice(deviceId);
     }
 
     void FRC_CAN_Reader_Native_Free(CANDeviceHandle handle)
@@ -55,12 +58,30 @@ extern "C"
 
     WPI_EventHandle FRC_CAN_Reader_Native_GetEventHandle(CANDeviceHandle handle)
     {
-        return reinterpret_cast<CANController *>(handle)->getEventHandle().GetHandle();
+        return reinterpret_cast<CANController *>(handle)->GetEventHandle().GetHandle();
     }
 
-    void FRC_CAN_Reader_Native_ReadMessage(CANDeviceHandle handle, struct CANData *data)
+    struct CANData *FRC_CAN_Reader_Native_ReadMessages(CANDeviceHandle handle, int32_t *dataLen)
     {
-        auto msg = reinterpret_cast<CANController *>(handle)->getData();
-        *data = msg;
+        auto msgs = reinterpret_cast<CANController *>(handle)->GetData();
+        if (msgs.empty())
+        {
+            *dataLen = 0;
+            return nullptr;
+        }
+        CANData *retData = reinterpret_cast<CANData *>(wpi::safe_malloc(sizeof(CANData) * msgs.size()));
+        if (retData == nullptr)
+        {
+            *dataLen = 0;
+            return nullptr;
+        }
+        std::copy(msgs.begin(), msgs.end(), retData);
+        *dataLen = msgs.size();
+        return retData;
+    }
+
+    void FRC_CAN_Reader_Native_FreeMessages(struct CANData *data, int32_t *dataLen)
+    {
+        free(data);
     }
 }

@@ -51,16 +51,16 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Condition=" '$(PublishPlatform)' == 'x86' " Update="Natives\FRC_CAN_Reader_Native.dll.windowsx86">
+    <None Condition=" '$(PublishPlatform)' == 'x86' " Update="Natives\FRCCanReaderNative.dll.windowsx86">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Condition=" '$(PublishPlatform)' == 'x64' " Update="Natives\FRC_CAN_Reader_Native.dll.windowsx86-64">
+    <None Condition=" '$(PublishPlatform)' == 'x64' " Update="Natives\FRCCanReaderNative.dll.windowsx86-64">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Condition=" '$(PublishPlatform)' == '' " Update="Natives\FRC_CAN_Reader_Native.dll.windowsx86-64">
+    <None Condition=" '$(PublishPlatform)' == '' " Update="Natives\FRCCanReaderNative.dll.windowsx86-64">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Condition=" '$(PublishPlatform)' == 'linux' " Update="Natives\FRC_CAN_Reader_Native.so.linuxx86-64">
+    <None Condition=" '$(PublishPlatform)' == 'linux' " Update="Natives\FRCCanReaderNative.so.linuxx86-64">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

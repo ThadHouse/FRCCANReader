@@ -33,7 +33,7 @@ WindowsCANController::WindowsCANController()
                 // First time device connecting, connect to it.
                 DEV_BROADCAST_DEVICEINTERFACE *pDi2 = reinterpret_cast<DEV_BROADCAST_DEVICEINTERFACE *>(parameter);
                 const char *str = pDi2->dbcc_name;
-                selectDevice(str);
+                SelectDevice(str);
                 printf("Dev Name %s\n", pDi2->dbcc_name);
                 break;
             }
@@ -138,28 +138,21 @@ void WindowsCANController::disconnected()
 WindowsCANController::~WindowsCANController()
 {
     m_running = false;
-    m_incomingData.emplace(CANData{});
     m_incomingThread.join();
 }
 
-void WindowsCANController::selectDevice(std::string port)
+void WindowsCANController::SelectDevice(std::string_view port)
 {
-    if (_stricmp(m_path.c_str(), port.c_str()) == 0) {
+    if (port == m_path) {
         return;
     }
     m_path = port;
     disconnected();
     connected();
 }
-std::optional<CANData> WindowsCANController::getData()
-{
-    auto ret = m_incomingData.pop();
-    if (!m_running)
-        return {};
-    return ret;
-}
 
-std::vector<std::pair<WindowsCANController::string_type, WindowsCANController::string_type>> WindowsCANController::getDevices()
+
+std::vector<can::CANDevice> WindowsCANController::EnumerateDevices()
 {
     candle_list_handle listHandle;
     if (!candle_list_scan(&listHandle))
@@ -174,7 +167,7 @@ std::vector<std::pair<WindowsCANController::string_type, WindowsCANController::s
         return {};
     }
 
-    std::vector<std::pair<WindowsCANController::string_type, WindowsCANController::string_type>> paths;
+    std::vector<can::CANDevice> paths;
 
     for (uint16_t i = 0; i < length; i++)
     {
@@ -186,18 +179,13 @@ std::vector<std::pair<WindowsCANController::string_type, WindowsCANController::s
 
         auto path = candle_dev_get_path(handle);
         auto name = candle_dev_get_name(handle);
-        paths.emplace_back(std::make_pair(name, path));
+        paths.emplace_back(can::CANDevice{name, path});
         candle_dev_free(handle);
     }
 
     candle_list_free(listHandle);
 
     return paths;
-}
-
-void WindowsCANController::releaseData()
-{
-    m_incomingData.emplace(CANData{});
 }
 
 void WindowsCANController::readThreadMain()
@@ -238,6 +226,6 @@ void WindowsCANController::readThreadMain()
 
         newData.timestamp = wpi::Now();
 
-        m_incomingData.emplace(newData);
+        PushData(std::move(newData));
     }
 }

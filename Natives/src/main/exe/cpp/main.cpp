@@ -4,7 +4,7 @@
 #include <string>
 
 int main() {
-  FRC_CAN_Reader_Native_Create(nullptr);
+  FRC_CAN_Reader_Native_Create();
 
   std::string line;
   std::getline(std::cin, line);

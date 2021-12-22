@@ -17,6 +17,6 @@ namespace can
   {
   public:
     static std::vector<CANDevice> EnumerateDevices();
-    static std::unique_ptr<CANController> CreateController(const CANDevice &device);
+    static std::unique_ptr<CANController> CreateController();
   };
 }

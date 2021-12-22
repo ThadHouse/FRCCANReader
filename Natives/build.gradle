@@ -12,7 +12,7 @@ ext.buildwin32 = true
 repositories {
   mavenCentral()
 }
-wpilibRepositories.addAllDevelopmentRepositories(project)
+wpilibRepositories.addAllReleaseRepositories(project)
 
 // Apply C++ configuration
 apply from: 'config.gradle'
@@ -21,7 +21,7 @@ apply from: 'config.gradle'
 nativeUtils {
   privateExportsConfigs {
     // Only export explicit symbols from driver library
-    FRC_CAN_Reader_Native {
+    FRCCanReaderNative {
       exportsFile = project.file("src/main/driver/symbols.txt")
       performStripAllSymbols = true
     }
@@ -30,21 +30,7 @@ nativeUtils {
 
 model {
   components {
-    Candle(NativeLibrarySpec) {
-      sources {
-        c {
-          source {
-            srcDirs 'src/main/driver/c'
-            include '**/*.c'
-          }
-          exportedHeaders {
-            srcDirs 'src/main/driver/include'
-            srcDirs 'src/main/driver/privateinclude'
-          }
-        }
-      }
-    }
-    FRC_CAN_Reader_Native(NativeLibrarySpec) {
+    FRCCanReaderNative(NativeLibrarySpec) {
       sources {
         cpp {
           source {
@@ -64,7 +50,7 @@ model {
             windowsCpp(CppSourceSet) {
               source {
                 srcDirs 'src/main/driver/windows'
-                include '*.cpp'
+                include '**/*.cpp'
               }
               exportedHeaders {
                 srcDirs 'src/main/driver/include'
@@ -74,7 +60,7 @@ model {
             candleC(CSourceSet) {
               source {
                 srcDirs 'src/main/driver/candle'
-                include '*.c'
+                include '**/*.c'
               }
               exportedHeaders {
                 srcDirs 'src/main/driver/include'
@@ -87,7 +73,7 @@ model {
             unixCpp(CppSourceSet) {
               source {
                 srcDirs 'src/main/driver/unix'
-                include '*.cpp'
+                include '**/*.cpp'
               }
               exportedHeaders {
                 srcDirs 'src/main/driver/include'
@@ -109,8 +95,7 @@ model {
       }
 
       binaries.all {
-        lib library: 'FRC_CAN_Reader_Native', linkage: 'shared'
-        lib library: 'Candle', linkage: 'static'
+        lib library: 'FRCCanReaderNative', linkage: 'shared'
         nativeUtils.useRequiredLibrary(it, "wpiutil_static")
       }
     }
@@ -121,7 +106,7 @@ model {
     copyBinaries(Task) { Task t ->
       def files = [:]
       c.each {
-        if (it.name != 'FRC_CAN_Reader_Native') return
+        if (it.name != 'FRCCanReaderNative') return
         it.binaries.withType(SharedLibraryBinarySpec).each {
           if(it.buildType.name != 'release') return
           t.dependsOn it.tasks.link

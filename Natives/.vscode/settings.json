@@ -67,7 +67,20 @@
     "xstring": "cpp",
     "xtr1common": "cpp",
     "xtree": "cpp",
-    "xutility": "cpp"
+    "xutility": "cpp",
+    "bit": "cpp",
+    "charconv": "cpp",
+    "compare": "cpp",
+    "cstdarg": "cpp",
+    "filesystem": "cpp",
+    "format": "cpp",
+    "forward_list": "cpp",
+    "fstream": "cpp",
+    "iomanip": "cpp",
+    "map": "cpp",
+    "span": "cpp",
+    "sstream": "cpp",
+    "stop_token": "cpp"
   },
   "C_Cpp.default.configurationProvider": "vscode-wpilib",
   "files.exclude": {
@@ -75,5 +88,6 @@
     "**/.project": true,
     "**/.settings": true,
     "**/.factorypath": true
-  }
+  },
+  "java.configuration.updateBuildConfiguration": "interactive"
 }
